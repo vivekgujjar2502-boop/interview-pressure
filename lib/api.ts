@@ -1,5 +1,26 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const LOCAL_API_URL = "http://localhost:8000";
+const PRODUCTION_API_URL = "https://interview-pressure.onrender.com";
+
+function resolveApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+
+  if (configured) {
+    return configured.replace(/\/+$/, "");
+  }
+
+  // No explicit configuration: use the local backend during development
+  // and the production backend when running as a deployed site.
+  if (
+    typeof window !== "undefined" &&
+    !["localhost", "127.0.0.1"].includes(window.location.hostname)
+  ) {
+    return PRODUCTION_API_URL;
+  }
+
+  return LOCAL_API_URL;
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 const TOKEN_STORAGE_KEY = "interview-pressure-token";
 
@@ -33,7 +54,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     });
   } catch {
     throw new Error(
-      "The InterviewPressure backend is not running on port 8000. Start it with: python -m uvicorn main:app --reload --port 8000"
+      `Could not reach the InterviewPressure API (${API_BASE_URL}). Check your connection or the NEXT_PUBLIC_API_URL setting.`
     );
   }
 
