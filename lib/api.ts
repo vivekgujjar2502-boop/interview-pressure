@@ -1,60 +1,20 @@
-const LOCAL_API_URL = "http://localhost:8000";
-const PRODUCTION_API_URL = "https://interview-pressure.onrender.com";
-
-function resolveApiBaseUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_API_URL;
-
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  // No explicit configuration: use the local backend during development
-  // and the production backend when running as a deployed site.
-  if (
-    typeof window !== "undefined" &&
-    !["localhost", "127.0.0.1"].includes(window.location.hostname)
-  ) {
-    return PRODUCTION_API_URL;
-  }
-
-  return LOCAL_API_URL;
-}
-
-export const API_BASE_URL = resolveApiBaseUrl();
-
-const TOKEN_STORAGE_KEY = "interview-pressure-token";
-
-export function getStoredToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
-}
-
-export function setStoredToken(token: string) {
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
-}
-
-export function clearStoredToken() {
-  localStorage.removeItem(TOKEN_STORAGE_KEY);
-}
-
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers = new Headers(options?.headers);
-  const token = getStoredToken();
 
-  if (token && !headers.has("Authorization")) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
+  // Never send Authorization header — auth is via HTTP-only cookie
+  headers.delete("Authorization");
 
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetch(path, {
       ...options,
       headers,
+      credentials: "same-origin",
     });
   } catch {
     throw new Error(
-      `Could not reach the InterviewPressure API (${API_BASE_URL}). Check your connection or the NEXT_PUBLIC_API_URL setting.`
+      "Could not reach the InterviewPressure API. Check your connection."
     );
   }
 

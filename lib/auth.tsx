@@ -10,11 +10,9 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import {
-  clearStoredToken,
   fetchCurrentUser,
   login as apiLogin,
   logout as apiLogout,
-  setStoredToken,
   signup as apiSignup,
   type User,
 } from "@/lib/api";
@@ -53,14 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkSession = useCallback((): Promise<User | null> => {
-    const token = typeof window !== "undefined"
-      ? localStorage.getItem("interview-pressure-token")
-      : null;
-
-    if (!token) {
-      return Promise.resolve(null);
-    }
-
+    // Cookie-based: no token check needed, just call /api/auth/me
     return fetchCurrentUser().catch(() => null);
   }, []);
 
@@ -85,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback(
     async (email: string, password: string) => {
       const result = await apiLogin({ email, password });
-      setStoredToken(result.token);
+      // Cookie is set server-side; no localStorage needed
       applyUser(result.user);
       return result.user;
     },
@@ -100,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       confirm_password: string;
     }) => {
       const result = await apiSignup(payload);
-      setStoredToken(result.token);
+      // Cookie is set server-side; no localStorage needed
       applyUser(result.user);
       return result.user;
     },
@@ -114,7 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Backend may already be down; clearing the local session is enough.
     }
 
-    clearStoredToken();
     applyUser(null);
     router.push("/");
   }, [applyUser, router]);
