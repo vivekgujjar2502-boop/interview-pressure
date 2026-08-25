@@ -32,20 +32,25 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="px-6 py-16">
+    <main className="page-enter px-6 py-20">
       <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center">Welcome back</h1>
-        <p className="text-gray-400 text-center mt-3">
+        <h1 className="text-3xl font-bold text-center tracking-tight">
+          Welcome back
+        </h1>
+        <p className="text-secondary-text text-center mt-3">
           Sign in to continue your interview practice.
         </p>
 
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-8 space-y-6"
+          className="mt-10 bg-surface border border-border-s rounded-2xl p-8 space-y-6 shadow-lg shadow-black/20"
         >
           <div>
-            <label htmlFor="email" className="block font-semibold mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold text-secondary-text mb-2"
+            >
               Email
             </label>
             <input
@@ -56,12 +61,15 @@ export default function LoginPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+              className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block font-semibold mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-semibold text-secondary-text mb-2"
+            >
               Password
             </label>
             <input
@@ -72,34 +80,37 @@ export default function LoginPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="••••••••"
-              className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+              className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
             />
           </div>
 
           {error && (
-            <p role="alert" className="text-sm text-red-400">
+            <div
+              role="alert"
+              className="bg-danger/5 border border-danger/20 text-danger text-sm rounded-xl px-4 py-3"
+            >
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed px-8 py-4 rounded-xl font-semibold transition"
+            className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             {submitting ? "Signing in..." : "Sign In"}
           </button>
 
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-sm pt-1">
             <Link
               href="/forgot-password"
-              className="text-gray-400 hover:text-blue-400 transition"
+              className="text-muted-text hover:text-accent transition-colors duration-200"
             >
               Forgot password?
             </Link>
             <Link
               href="/signup"
-              className="text-blue-400 hover:text-blue-300 transition"
+              className="text-accent hover:text-accent-hover transition-colors duration-200"
             >
               Create account →
             </Link>

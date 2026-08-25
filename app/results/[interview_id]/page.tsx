@@ -25,9 +25,9 @@ function formatDuration(seconds?: number): string {
 
 function MetricTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-black border border-gray-800 rounded-xl px-4 py-3 text-center">
-      <p className="text-lg font-bold text-blue-400">{value}</p>
-      <p className="text-gray-500 text-xs mt-1">{label}</p>
+    <div className="bg-base border border-border-s rounded-xl px-4 py-3 text-center">
+      <p className="text-lg font-bold text-accent">{value}</p>
+      <p className="text-muted-text text-xs mt-1">{label}</p>
     </div>
   );
 }
@@ -40,9 +40,9 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
     metrics.duration_seconds > 0;
 
   return (
-    <div className="bg-black border border-gray-800 rounded-xl p-5">
+    <div className="bg-surface/60 border border-border-s rounded-2xl p-5">
       <div className="flex items-start justify-between gap-4">
-        <p className="font-semibold text-sm text-gray-300">
+        <p className="font-semibold text-sm text-secondary-text">
           Q{question.question_number}. {question.question_text}
         </p>
 
@@ -50,10 +50,10 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
           <span
             className={`shrink-0 text-xs font-semibold border rounded-lg px-2 py-1 ${
               question.score >= 7
-                ? "bg-green-500/10 text-green-400 border-green-500/30"
+                ? "bg-success/10 text-success border-success/20"
                 : question.score >= 5
-                  ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                  : "bg-red-500/10 text-red-400 border-red-500/30"
+                  ? "bg-accent/10 text-accent border-accent/20"
+                  : "bg-danger/10 text-danger border-danger/20"
             }`}
           >
             {question.score}/10
@@ -61,12 +61,12 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
         )}
       </div>
 
-      <p className="text-gray-500 text-sm mt-3 leading-6 whitespace-pre-wrap">
+      <p className="text-muted-text text-sm mt-3 leading-6 whitespace-pre-wrap">
         {question.answer_text ? question.answer_text : "Not answered."}
       </p>
 
       {question.feedback && (
-        <p className="text-blue-300/70 text-xs mt-3 italic">
+        <p className="text-accent/70 text-xs mt-3 italic">
           {question.feedback}
         </p>
       )}
@@ -75,15 +75,15 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
         question.weaknesses.length > 0 ||
         question.improvement ||
         question.communication_notes) && (
-        <div className="mt-4 space-y-3 border-t border-gray-900 pt-4">
+        <div className="mt-4 space-y-3 border-t border-border-s pt-4">
           {question.strengths.length > 0 && (
             <div>
-              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+              <p className="text-muted-text text-xs font-semibold uppercase tracking-wide">
                 Strengths
               </p>
               <ul className="mt-1 space-y-1">
                 {question.strengths.map((strength) => (
-                  <li key={strength} className="text-blue-300 text-sm">
+                  <li key={strength} className="text-success text-sm">
                     + {strength}
                   </li>
                 ))}
@@ -93,12 +93,12 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
 
           {question.weaknesses.length > 0 && (
             <div>
-              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+              <p className="text-muted-text text-xs font-semibold uppercase tracking-wide">
                 Weaknesses
               </p>
               <ul className="mt-1 space-y-1">
                 {question.weaknesses.map((weakness) => (
-                  <li key={weakness} className="text-gray-400 text-sm">
+                  <li key={weakness} className="text-secondary-text text-sm">
                     − {weakness}
                   </li>
                 ))}
@@ -108,10 +108,10 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
 
           {question.improvement && (
             <div>
-              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+              <p className="text-muted-text text-xs font-semibold uppercase tracking-wide">
                 Improvement
               </p>
-              <p className="text-gray-300 text-sm mt-1 leading-6">
+              <p className="text-secondary-text text-sm mt-1 leading-6">
                 {question.improvement}
               </p>
             </div>
@@ -119,10 +119,10 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
 
           {question.communication_notes && (
             <div>
-              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+              <p className="text-muted-text text-xs font-semibold uppercase tracking-wide">
                 Communication
               </p>
-              <p className="text-gray-300 text-sm mt-1 leading-6">
+              <p className="text-secondary-text text-sm mt-1 leading-6">
                 {question.communication_notes}
               </p>
             </div>
@@ -131,8 +131,8 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
       )}
 
       {hasMetrics && (
-        <div className="mt-4 border-t border-gray-900 pt-4">
-          <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">
+        <div className="mt-4 border-t border-border-s pt-4">
+          <p className="text-muted-text text-xs font-semibold uppercase tracking-wide mb-2">
             Communication metrics{" "}
             <span className="normal-case font-normal">
               (observable indicators only)
@@ -166,7 +166,7 @@ function QuestionCard({ question }: { question: ResultQuestion }) {
       )}
 
       {question.ai_error && (
-        <p className="mt-3 text-xs bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2 text-blue-300">
+        <p className="mt-3 text-xs bg-accent/5 border border-accent/15 rounded-xl px-3 py-2 text-accent">
           Local AI evaluation unavailable — placeholder score used.
         </p>
       )}
@@ -213,7 +213,7 @@ export default function InterviewResultPage() {
 
   if (!ready || phase === "loading") {
     return (
-      <main className="px-6 py-24 text-center text-gray-500">
+      <main className="px-6 py-24 text-center text-muted-text">
         Loading your results...
       </main>
     );
@@ -221,13 +221,15 @@ export default function InterviewResultPage() {
 
   if (phase === "error") {
     return (
-      <main className="px-6 py-24 max-w-xl mx-auto text-center">
-        <h1 className="text-2xl font-bold">Could not load results</h1>
-        <p className="text-gray-400 mt-4">{errorMessage}</p>
+      <main className="page-enter px-6 py-24 max-w-xl mx-auto text-center">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Could not load results
+        </h1>
+        <p className="text-secondary-text mt-4">{errorMessage}</p>
         <button
           type="button"
           onClick={runLoader}
-          className="mt-8 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold transition"
+          className="mt-8 bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
         >
           Try Again
         </button>
@@ -237,14 +239,16 @@ export default function InterviewResultPage() {
 
   if (phase === "not-finished" || !results) {
     return (
-      <main className="px-6 py-24 max-w-xl mx-auto text-center bg-gray-950 border border-gray-800 rounded-2xl mt-16">
-        <h1 className="text-2xl font-bold">Interview not finished yet</h1>
-        <p className="text-gray-400 mt-4">
+      <main className="page-enter px-6 py-24 max-w-xl mx-auto text-center bg-surface border border-border-s rounded-2xl mt-16 shadow-lg shadow-black/20">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Interview not finished yet
+        </h1>
+        <p className="text-secondary-text mt-4">
           Results appear once you complete all questions.
         </p>
         <Link
           href="/dashboard"
-          className="inline-block mt-8 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold transition"
+          className="inline-block mt-8 bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
         >
           Back to Dashboard →
         </Link>
@@ -267,44 +271,44 @@ export default function InterviewResultPage() {
     .filter((item) => item && item.trim());
 
   return (
-    <main className="px-6 py-12 max-w-3xl mx-auto">
-      <h1 className="text-3xl md:text-4xl font-bold text-center">
+    <main className="page-enter px-6 py-12 max-w-3xl mx-auto">
+      <h1 className="text-3xl md:text-4xl font-bold text-center tracking-tight">
         Interview Complete
       </h1>
 
-      <div className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-8">
+      <div className="mt-10 bg-surface border border-border-s rounded-2xl p-8 shadow-lg shadow-black/20">
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="bg-black border border-gray-800 rounded-xl py-6 px-2">
-            <p className="text-3xl font-bold text-blue-500">
+          <div className="bg-base border border-border-s rounded-xl py-6 px-2">
+            <p className="text-3xl font-bold text-accent">
               {(results.overall_score ?? 0).toFixed(1)}
-              <span className="text-lg text-gray-500">/10</span>
+              <span className="text-lg text-muted-text">/10</span>
             </p>
-            <p className="text-gray-500 text-sm mt-2">Overall score</p>
+            <p className="text-muted-text text-sm mt-2">Overall score</p>
           </div>
 
-          <div className="bg-black border border-gray-800 rounded-xl py-6 px-2">
-            <p className="text-3xl font-bold text-blue-500">
+          <div className="bg-base border border-border-s rounded-xl py-6 px-2">
+            <p className="text-3xl font-bold text-accent">
               {results.total_questions}
             </p>
-            <p className="text-gray-500 text-sm mt-2">Questions</p>
+            <p className="text-muted-text text-sm mt-2">Questions</p>
           </div>
 
-          <div className="bg-black border border-gray-800 rounded-xl py-6 px-2">
-            <p className="text-3xl font-bold text-blue-500">
+          <div className="bg-base border border-border-s rounded-xl py-6 px-2">
+            <p className="text-3xl font-bold text-accent">
               {answeredQuestions.length}
             </p>
-            <p className="text-gray-500 text-sm mt-2">Answered</p>
+            <p className="text-muted-text text-sm mt-2">Answered</p>
           </div>
         </div>
 
         {overallStrengths.length > 0 && (
           <div className="mt-8">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-text">
               Overall strengths
             </h2>
             <ul className="mt-2 space-y-1">
               {overallStrengths.map((strength) => (
-                <li key={strength} className="text-blue-300 text-sm">
+                <li key={strength} className="text-success text-sm">
                   + {strength}
                 </li>
               ))}
@@ -314,12 +318,12 @@ export default function InterviewResultPage() {
 
         {overallWeaknesses.length > 0 && (
           <div className="mt-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-text">
               Overall weaknesses
             </h2>
             <ul className="mt-2 space-y-1">
               {overallWeaknesses.map((weakness) => (
-                <li key={weakness} className="text-gray-400 text-sm">
+                <li key={weakness} className="text-secondary-text text-sm">
                   − {weakness}
                 </li>
               ))}
@@ -329,12 +333,15 @@ export default function InterviewResultPage() {
 
         {improvements.length > 0 && (
           <div className="mt-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-text">
               Recommended improvements
             </h2>
             <ul className="mt-2 space-y-1 list-disc list-inside">
               {improvements.map((improvement) => (
-                <li key={improvement} className="text-gray-300 text-sm leading-6">
+                <li
+                  key={improvement}
+                  className="text-secondary-text text-sm leading-6"
+                >
                   {improvement}
                 </li>
               ))}
@@ -342,7 +349,9 @@ export default function InterviewResultPage() {
           </div>
         )}
 
-        <h2 className="text-xl font-bold mt-10 mb-4">Question breakdown</h2>
+        <h2 className="text-xl font-bold mt-10 mb-4 tracking-tight">
+          Question breakdown
+        </h2>
         <div className="space-y-4">
           {results.questions.map((question) => (
             <QuestionCard key={question.question_number} question={question} />
@@ -352,14 +361,14 @@ export default function InterviewResultPage() {
         <div className="grid sm:grid-cols-2 gap-4 mt-10">
           <Link
             href="/history"
-            className="border border-gray-700 hover:bg-gray-900 px-8 py-4 rounded-xl font-semibold transition text-center"
+            className="border border-border-d hover:bg-white/5 px-8 py-4 rounded-xl font-semibold transition-all duration-200 text-center text-secondary-text hover:text-primary-text"
           >
             View History
           </Link>
 
           <Link
             href="/upload"
-            className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold transition text-center"
+            className="bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold transition-all duration-200 text-center shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             New Interview →
           </Link>

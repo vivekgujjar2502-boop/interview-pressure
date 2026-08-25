@@ -153,7 +153,6 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
   const [actionError, setActionError] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
 
-  // Voice flow state.
   const [voiceStage, setVoiceStage] = useState<VoiceStage>("idle");
   const [recordedSeconds, setRecordedSeconds] = useState(0);
   const [voiceError, setVoiceError] = useState("");
@@ -332,7 +331,6 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
     setVoiceError("");
 
     try {
-      // Stage 1: upload + local transcription.
       setVoiceStage("uploading");
 
       const blobResponse = await fetch(recordedUrl);
@@ -358,7 +356,6 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
         [currentQuestion.id]: transcriptResult.transcript,
       }));
 
-      // Stage 2: local AI evaluation.
       setVoiceStage("analyzing");
 
       const result = await evaluateAnswer(
@@ -515,41 +512,41 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
-      <h1 className="text-2xl md:text-3xl font-bold text-center">
+      <h1 className="text-2xl md:text-3xl font-bold text-center tracking-tight">
         Mock Interview
       </h1>
 
-      <p className="text-gray-400 text-center mt-3">
+      <p className="text-secondary-text text-center mt-3 text-sm">
         {interview.job_role} · {interview.experience}
         {interview.company ? ` · ${interview.company}` : ""}
       </p>
 
-      <div className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-6 sm:p-8">
+      <div className="mt-10 bg-surface border border-border-s rounded-2xl p-6 sm:p-8 shadow-lg shadow-black/20">
         <div className="flex items-center justify-between mb-3 gap-4">
-          <p className="text-sm font-semibold text-blue-500">
+          <p className="text-sm font-semibold text-accent">
             Question {currentIndex + 1} of {totalQuestions}
             {isCurrentSaved && (
-              <span className="text-green-400 ml-2">✓ Saved</span>
+              <span className="text-success ml-2">✓ Saved</span>
             )}
             {isCurrentSaved && scoresMap[currentQuestion.id] != null && (
-              <span className="ml-2 text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg px-2 py-1">
+              <span className="ml-2 text-xs font-semibold bg-accent/10 text-accent border border-accent/20 rounded-lg px-2 py-1">
                 {scoresMap[currentQuestion.id]}/10
               </span>
             )}
           </p>
-          <p className="text-gray-600 text-sm shrink-0">
+          <p className="text-muted-text text-sm shrink-0">
             {answeredCount}/{totalQuestions} saved
           </p>
         </div>
 
-        <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-border-s rounded-full overflow-hidden">
           <div
-            className="h-full bg-blue-600 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-accent to-secondary rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        <p className="text-lg md:text-xl leading-relaxed mt-8">
+        <p className="text-lg md:text-xl leading-relaxed mt-8 text-primary-text">
           {currentQuestion.question_text}
         </p>
 
@@ -560,7 +557,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
           rows={5}
           aria-label={`Your answer to question ${currentIndex + 1}`}
           readOnly={voiceStage === "recording"}
-          className="w-full bg-black border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none transition mt-8 resize-y disabled:opacity-60"
+          className="w-full bg-base border border-border-s focus:border-accent focus:ring-1 focus:ring-accent/30 rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none transition-all duration-200 mt-8 resize-y disabled:opacity-60"
         />
 
         {/* Voice controls */}
@@ -569,9 +566,9 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
             <button
               type="button"
               onClick={() => void startRecording()}
-              className="border border-gray-700 hover:bg-gray-900 px-6 py-3 rounded-xl font-semibold transition inline-flex items-center justify-center gap-2"
+              className="border border-border-d hover:bg-white/5 px-6 py-3 rounded-xl font-semibold text-sm text-secondary-text hover:text-primary-text transition-all duration-200 inline-flex items-center justify-center gap-2"
             >
-              <span className="w-3 h-3 rounded-full bg-red-500" aria-hidden />
+              <span className="w-3 h-3 rounded-full bg-danger pulse-recording" aria-hidden />
               Start Recording
             </button>
           )}
@@ -580,10 +577,10 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
             <>
               <span
                 role="status"
-                className="flex items-center gap-2 text-sm font-semibold text-red-400"
+                className="flex items-center gap-2 text-sm font-semibold text-danger"
               >
                 <span
-                  className="w-3 h-3 rounded-full bg-red-500 animate-pulse"
+                  className="w-3 h-3 rounded-full bg-danger pulse-recording"
                   aria-hidden
                 />
                 Recording… {formatTime(recordedSeconds)}
@@ -591,7 +588,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
               <button
                 type="button"
                 onClick={stopRecording}
-                className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold transition"
+                className="bg-danger hover:bg-danger/80 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200"
               >
                 Stop Recording
               </button>
@@ -609,7 +606,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
               <button
                 type="button"
                 onClick={discardRecording}
-                className="border border-gray-700 hover:bg-gray-900 px-5 py-3 rounded-xl font-semibold transition"
+                className="border border-border-d hover:bg-white/5 px-5 py-3 rounded-xl font-semibold text-sm text-secondary-text hover:text-primary-text transition-all duration-200"
               >
                 Re-record
               </button>
@@ -620,7 +617,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
             <p
               role="status"
               className={`text-sm ${
-                voiceStage === "analyzed" ? "text-green-400" : "text-blue-400"
+                voiceStage === "analyzed" ? "text-success" : "text-accent"
               }`}
             >
               {voiceStage === "analyzed"
@@ -629,37 +626,43 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
             </p>
           )}
 
-          <p className="text-xs text-gray-600 sm:ml-auto">
+          <p className="text-xs text-muted-text sm:ml-auto">
             Type above or use your voice — both are evaluated.
           </p>
         </div>
 
         {(voiceError || actionError) && (
-          <p role="alert" className="mt-3 text-sm text-red-400">
+          <div
+            role="alert"
+            className="mt-3 bg-danger/5 border border-danger/20 text-danger text-sm rounded-xl px-4 py-3"
+          >
             {voiceError || actionError}
-          </p>
+          </div>
         )}
 
         {aiNotices[currentQuestion.id] && (
-          <p className="mt-3 text-xs bg-blue-500/10 border border-blue-500/30 rounded-xl px-4 py-3 text-blue-300 break-words">
+          <div className="mt-3 text-xs bg-accent/5 border border-accent/15 rounded-xl px-4 py-3 text-accent break-words">
             Local AI unavailable for this answer — a placeholder score was
             used. Setup info: {aiNotices[currentQuestion.id]}
-          </p>
+          </div>
         )}
 
         {validationError && (
-          <p role="alert" className="mt-3 text-sm text-yellow-400">
+          <div
+            role="alert"
+            className="mt-3 bg-warning/5 border border-warning/20 text-warning text-sm rounded-xl px-4 py-3"
+          >
             {validationError}
-          </p>
+          </div>
         )}
 
         {/* Primary actions */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-8">
+        <div className="flex flex-col sm:flex-row gap-3 mt-8">
           <button
             type="button"
             onClick={handlePrevious}
             disabled={currentIndex === 0 || isBusy}
-            className="border border-gray-700 hover:bg-gray-900 disabled:opacity-40 disabled:cursor-not-allowed px-8 py-4 rounded-xl font-semibold transition flex-1"
+            className="border border-border-d hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl font-semibold text-sm text-secondary-text hover:text-primary-text transition-all duration-200 flex-1"
           >
             ← Previous
           </button>
@@ -669,7 +672,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
               type="button"
               onClick={() => void handleSubmitAnswer()}
               disabled={isBusy}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 px-8 py-4 rounded-xl font-semibold transition flex-1"
+              className="bg-accent hover:bg-accent-hover disabled:opacity-50 px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 flex-1 shadow-lg shadow-accent/10 hover:shadow-accent/20"
             >
               {voiceStage === "analyzing"
                 ? "Analyzing..."
@@ -686,7 +689,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
               type="button"
               onClick={() => void handleFinish()}
               disabled={!isCurrentSaved || isBusy}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed px-8 py-4 rounded-xl font-semibold transition flex-1"
+              className="bg-accent hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 flex-1 shadow-lg shadow-accent/10 hover:shadow-accent/20"
             >
               {isFinishing ? "Finishing..." : "Finish Interview ✓"}
             </button>
@@ -695,7 +698,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
               type="button"
               onClick={handleNext}
               disabled={!isCurrentSaved || isBusy}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed px-8 py-4 rounded-xl font-semibold transition flex-1"
+              className="bg-accent hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 flex-1 shadow-lg shadow-accent/10 hover:shadow-accent/20"
             >
               Next Question →
             </button>
@@ -707,7 +710,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
             type="button"
             onClick={() => void retryEvaluation()}
             disabled={isBusy}
-            className="mt-4 text-xs text-gray-500 hover:text-blue-400 underline transition disabled:opacity-50"
+            className="mt-4 text-xs text-muted-text hover:text-accent underline transition-colors duration-200 disabled:opacity-50"
           >
             Re-evaluate this answer
           </button>
@@ -717,7 +720,7 @@ function InterviewSession({ interview, onFinish }: InterviewSessionProps) {
       <p className="text-center mt-8">
         <Link
           href="/dashboard"
-          className="text-gray-600 hover:text-gray-400 text-sm transition"
+          className="text-muted-text hover:text-secondary-text text-sm transition-colors duration-200"
         >
           ← Back to Dashboard
         </Link>
@@ -780,27 +783,29 @@ export default function InterviewPage() {
 
   if (!ready) {
     return (
-      <main className="px-6 py-24 text-center text-gray-500">Loading...</main>
+      <main className="px-6 py-24 text-center text-muted-text">Loading...</main>
     );
   }
 
   return (
-    <main>
+    <main className="page-enter">
       {phase === "loading" && (
         <div className="max-w-3xl mx-auto text-center mt-24">
-          <p className="text-blue-400">Preparing your interview...</p>
+          <p className="text-accent">Preparing your interview...</p>
         </div>
       )}
 
       {phase === "missing" && (
-        <div className="max-w-xl mx-auto text-center mt-20 bg-gray-950 border border-gray-800 rounded-2xl p-10 mx-6">
-          <h1 className="text-2xl font-bold">No interview session found</h1>
-          <p className="text-gray-400 mt-4">
+        <div className="max-w-xl mx-auto text-center mt-20 bg-surface border border-border-s rounded-2xl p-10 mx-6 shadow-lg shadow-black/20">
+          <h1 className="text-2xl font-bold tracking-tight">
+            No interview session found
+          </h1>
+          <p className="text-secondary-text mt-4">
             Pick a resume and enter the job you are targeting to begin.
           </p>
           <Link
             href="/upload"
-            className="inline-block bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold transition mt-8"
+            className="inline-block bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold transition-all duration-200 mt-8 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             Start from Resume →
           </Link>
@@ -808,13 +813,15 @@ export default function InterviewPage() {
       )}
 
       {phase === "error" && (
-        <div className="max-w-xl mx-auto text-center mt-20 bg-gray-950 border border-gray-800 rounded-2xl p-10 mx-6">
-          <h1 className="text-2xl font-bold">Something went wrong</h1>
-          <p className="text-gray-400 mt-4">{errorMessage}</p>
+        <div className="max-w-xl mx-auto text-center mt-20 bg-surface border border-border-s rounded-2xl p-10 mx-6 shadow-lg shadow-black/20">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Something went wrong
+          </h1>
+          <p className="text-secondary-text mt-4">{errorMessage}</p>
           <button
             type="button"
             onClick={handleRetry}
-            className="inline-block bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold transition mt-8"
+            className="inline-block bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold transition-all duration-200 mt-8 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             Try Again
           </button>

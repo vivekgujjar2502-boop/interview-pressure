@@ -114,22 +114,27 @@ export default function HistoryPage() {
 
   if (!ready) {
     return (
-      <main className="px-6 py-24 text-center text-gray-500">
+      <main className="px-6 py-24 text-center text-muted-text">
         Loading your history...
       </main>
     );
   }
 
   return (
-    <main className="px-6 py-12 max-w-5xl mx-auto">
-      <h1 className="text-3xl md:text-4xl font-bold">Interview history</h1>
-      <p className="text-gray-400 mt-3">
+    <main className="page-enter px-6 py-12 max-w-5xl mx-auto">
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+        Interview history
+      </h1>
+      <p className="text-secondary-text mt-3">
         Every mock interview you have completed, with scores and feedback.
       </p>
 
-      <div className="mt-8 bg-gray-950 border border-gray-800 rounded-2xl p-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 bg-surface/60 border border-border-s rounded-2xl p-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <label htmlFor="filter-role" className="text-xs text-gray-500 block mb-2">
+          <label
+            htmlFor="filter-role"
+            className="text-xs text-muted-text block mb-2 font-semibold"
+          >
             Role contains
           </label>
           <input
@@ -138,14 +143,14 @@ export default function HistoryPage() {
             value={roleFilter}
             onChange={(event) => setRoleFilter(event.target.value)}
             placeholder="e.g. Backend"
-            className="w-full bg-black border border-gray-700 rounded-xl px-3 py-2.5 text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500 transition"
+            className="w-full bg-base border border-border-s rounded-xl px-3 py-2.5 text-sm placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
           />
         </div>
 
         <div>
           <label
             htmlFor="filter-company"
-            className="text-xs text-gray-500 block mb-2"
+            className="text-xs text-muted-text block mb-2 font-semibold"
           >
             Company contains
           </label>
@@ -155,14 +160,14 @@ export default function HistoryPage() {
             value={companyFilter}
             onChange={(event) => setCompanyFilter(event.target.value)}
             placeholder="e.g. Google"
-            className="w-full bg-black border border-gray-700 rounded-xl px-3 py-2.5 text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500 transition"
+            className="w-full bg-base border border-border-s rounded-xl px-3 py-2.5 text-sm placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
           />
         </div>
 
         <div>
           <label
             htmlFor="filter-score"
-            className="text-xs text-gray-500 block mb-2"
+            className="text-xs text-muted-text block mb-2 font-semibold"
           >
             Minimum score
           </label>
@@ -175,12 +180,15 @@ export default function HistoryPage() {
             value={minScore}
             onChange={(event) => setMinScore(event.target.value)}
             placeholder="e.g. 6"
-            className="w-full bg-black border border-gray-700 rounded-xl px-3 py-2.5 text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500 transition"
+            className="w-full bg-base border border-border-s rounded-xl px-3 py-2.5 text-sm placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
           />
         </div>
 
         <div>
-          <label htmlFor="sort-order" className="text-xs text-gray-500 block mb-2">
+          <label
+            htmlFor="sort-order"
+            className="text-xs text-muted-text block mb-2 font-semibold"
+          >
             Sort by
           </label>
           <select
@@ -189,7 +197,7 @@ export default function HistoryPage() {
             onChange={(event) =>
               setSortOrder(event.target.value as typeof sortOrder)
             }
-            className="w-full bg-black border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition"
+            className="w-full bg-base border border-border-s rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
           >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
@@ -199,17 +207,20 @@ export default function HistoryPage() {
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 text-sm text-red-400">
+        <p role="alert" className="mt-6 text-sm text-danger">
           {error}
         </p>
       )}
 
       {loading && (
-        <p className="mt-10 text-gray-500">Loading interviews...</p>
+        <p className="mt-10 text-muted-text">Loading interviews...</p>
       )}
 
       {!loading && !error && visible.length === 0 && (
-        <div className="mt-10 bg-gray-950 border border-dashed border-gray-700 rounded-2xl p-12 text-center">
+        <div className="mt-10 bg-surface/40 border border-dashed border-border-s rounded-2xl p-12 text-center">
+          <div className="text-4xl mb-4" aria-hidden>
+            🗂
+          </div>
           <h3 className="text-lg font-semibold">
             {interviews.length === 0
               ? "No interviews yet"
@@ -218,7 +229,7 @@ export default function HistoryPage() {
           {interviews.length === 0 && (
             <Link
               href="/upload"
-              className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 px-7 py-3 rounded-xl font-semibold transition"
+              className="inline-block mt-6 bg-accent hover:bg-accent-hover px-7 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
             >
               Start your first interview →
             </Link>
@@ -231,14 +242,14 @@ export default function HistoryPage() {
           {visible.map((interview) => (
             <li
               key={interview.id}
-              className="bg-gray-950 border border-gray-800 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+              className="bg-surface/60 border border-border-s hover:border-border-d rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-all duration-200"
             >
               <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">
+                <p className="font-semibold truncate text-primary-text">
                   {interview.role}
                   {interview.company ? ` · ${interview.company}` : ""}
                 </p>
-                <p className="text-gray-500 text-sm mt-1">
+                <p className="text-muted-text text-sm mt-1">
                   {formatDate(interview.created_at)} ·{" "}
                   {interview.answered_questions}/{interview.total_questions}{" "}
                   answered · {interview.experience}
@@ -248,11 +259,11 @@ export default function HistoryPage() {
               <div className="flex items-center gap-3 shrink-0">
                 {interview.status === "completed" &&
                 interview.score !== null ? (
-                  <span className="text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg px-3 py-1.5">
+                  <span className="text-xs font-semibold bg-accent/10 text-accent border border-accent/20 rounded-lg px-3 py-1.5">
                     {interview.score.toFixed(1)}/10
                   </span>
                 ) : (
-                  <span className="text-xs font-semibold bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-lg px-3 py-1.5">
+                  <span className="text-xs font-semibold bg-warning/10 text-warning border border-warning/20 rounded-lg px-3 py-1.5">
                     In progress
                   </span>
                 )}
@@ -260,7 +271,7 @@ export default function HistoryPage() {
                 {interview.status === "completed" && (
                   <Link
                     href={`/results/${interview.id}`}
-                    className="text-blue-400 hover:text-blue-300 text-sm font-semibold transition"
+                    className="text-accent hover:text-accent-hover text-sm font-semibold transition-colors duration-200"
                   >
                     Results →
                   </Link>
@@ -271,7 +282,7 @@ export default function HistoryPage() {
                   onClick={() => void handleDelete(interview.id)}
                   disabled={deletingId === interview.id}
                   aria-label={`Delete interview for ${interview.role}`}
-                  className="border border-gray-800 hover:border-red-500/50 hover:text-red-400 text-gray-500 text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50 transition"
+                  className="border border-border-s hover:border-danger/40 hover:text-danger hover:bg-danger/5 text-muted-text text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50 transition-all duration-200"
                 >
                   {deletingId === interview.id ? "Deleting..." : "Delete"}
                 </button>

@@ -22,7 +22,7 @@ export default function ProfilePage() {
 
   if (!ready || !user) {
     return (
-      <main className="px-6 py-24 text-center text-gray-500">
+      <main className="px-6 py-24 text-center text-muted-text">
         Loading your profile...
       </main>
     );
@@ -84,22 +84,26 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="px-6 py-12 max-w-2xl mx-auto">
-      <h1 className="text-3xl md:text-4xl font-bold">Profile</h1>
+    <main className="page-enter px-6 py-12 max-w-2xl mx-auto">
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Profile</h1>
 
-      <div className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-8">
+      <div className="mt-10 bg-surface border border-border-s rounded-2xl p-8 shadow-lg shadow-black/20">
         <dl className="grid gap-4 sm:grid-cols-3 text-sm">
           <div>
-            <dt className="text-gray-500">Name</dt>
-            <dd className="font-semibold mt-1">{user.name}</dd>
+            <dt className="text-muted-text">Name</dt>
+            <dd className="font-semibold mt-1 text-primary-text">
+              {user.name}
+            </dd>
           </div>
           <div>
-            <dt className="text-gray-500">Email</dt>
-            <dd className="font-semibold mt-1 break-all">{user.email}</dd>
+            <dt className="text-muted-text">Email</dt>
+            <dd className="font-semibold mt-1 break-all text-primary-text">
+              {user.email}
+            </dd>
           </div>
           <div>
-            <dt className="text-gray-500">Member since</dt>
-            <dd className="font-semibold mt-1">
+            <dt className="text-muted-text">Member since</dt>
+            <dd className="font-semibold mt-1 text-primary-text">
               {new Date(user.created_at).toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "long",
@@ -109,7 +113,7 @@ export default function ProfilePage() {
           </div>
         </dl>
 
-        <p className="text-xs text-gray-600 mt-5">
+        <p className="text-xs text-muted-text mt-5">
           Email changes require a verification flow which is not part of this
           local build — your email is fixed here.
         </p>
@@ -117,15 +121,21 @@ export default function ProfilePage() {
 
       <section
         aria-labelledby="update-name-heading"
-        className="mt-8 bg-gray-950 border border-gray-800 rounded-2xl p-8"
+        className="mt-8 bg-surface border border-border-s rounded-2xl p-8 shadow-lg shadow-black/20"
       >
-        <h2 id="update-name-heading" className="text-xl font-bold">
+        <h2
+          id="update-name-heading"
+          className="text-xl font-bold tracking-tight"
+        >
           Update name
         </h2>
 
         <form onSubmit={handleSaveName} noValidate className="mt-5 space-y-4">
           <div>
-            <label htmlFor="profile-name" className="block font-semibold mb-2">
+            <label
+              htmlFor="profile-name"
+              className="block font-semibold mb-2 text-sm text-secondary-text"
+            >
               Display name
             </label>
             <input
@@ -136,24 +146,24 @@ export default function ProfilePage() {
                 setName(event.target.value);
                 setNameSaved(false);
               }}
-              className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+              className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
             />
           </div>
 
           {nameError && (
-            <p role="alert" className="text-sm text-red-400">
+            <p role="alert" className="text-sm text-danger">
               {nameError}
             </p>
           )}
 
           {nameSaved && (
-            <p className="text-sm text-green-400">✓ Name updated.</p>
+            <p className="text-sm text-success">✓ Name updated.</p>
           )}
 
           <button
             type="submit"
             disabled={savingName || !effectiveName.trim()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 px-6 py-3 rounded-xl font-semibold transition"
+            className="bg-accent hover:bg-accent-hover disabled:opacity-60 px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             {savingName ? "Saving..." : "Save Name"}
           </button>
@@ -162,9 +172,12 @@ export default function ProfilePage() {
 
       <section
         aria-labelledby="change-password-heading"
-        className="mt-8 bg-gray-950 border border-gray-800 rounded-2xl p-8"
+        className="mt-8 bg-surface border border-border-s rounded-2xl p-8 shadow-lg shadow-black/20"
       >
-        <h2 id="change-password-heading" className="text-xl font-bold">
+        <h2
+          id="change-password-heading"
+          className="text-xl font-bold tracking-tight"
+        >
           Change password
         </h2>
 
@@ -176,7 +189,7 @@ export default function ProfilePage() {
           <div>
             <label
               htmlFor="current-password"
-              className="block font-semibold mb-2"
+              className="block font-semibold mb-2 text-sm text-secondary-text"
             >
               Current password
             </label>
@@ -187,7 +200,7 @@ export default function ProfilePage() {
               required
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
-              className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition"
+              className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
             />
           </div>
 
@@ -195,7 +208,7 @@ export default function ProfilePage() {
             <div>
               <label
                 htmlFor="new-profile-password"
-                className="block font-semibold mb-2"
+                className="block font-semibold mb-2 text-sm text-secondary-text"
               >
                 New password
               </label>
@@ -206,14 +219,14 @@ export default function ProfilePage() {
                 required
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
-                className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition"
+                className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
               />
             </div>
 
             <div>
               <label
                 htmlFor="confirm-new-profile-password"
-                className="block font-semibold mb-2"
+                className="block font-semibold mb-2 text-sm text-secondary-text"
               >
                 Confirm new password
               </label>
@@ -224,19 +237,19 @@ export default function ProfilePage() {
                 required
                 value={confirmNewPassword}
                 onChange={(event) => setConfirmNewPassword(event.target.value)}
-                className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition"
+                className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
               />
             </div>
           </div>
 
           {passwordError && (
-            <p role="alert" className="text-sm text-red-400">
+            <p role="alert" className="text-sm text-danger">
               {passwordError}
             </p>
           )}
 
           {passwordMessage && (
-            <p className="text-sm text-green-400">{passwordMessage}</p>
+            <p className="text-sm text-success">{passwordMessage}</p>
           )}
 
           <button
@@ -247,24 +260,24 @@ export default function ProfilePage() {
               !newPassword ||
               !confirmNewPassword
             }
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed px-6 py-3 rounded-xl font-semibold transition"
+            className="bg-accent hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
             {savingPassword ? "Updating..." : "Update Password"}
           </button>
         </form>
       </section>
 
-      <section className="mt-8 bg-gray-950 border border-gray-800 rounded-2xl p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="mt-8 bg-surface border border-border-s rounded-2xl p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg shadow-black/20">
         <div>
-          <h2 className="text-xl font-bold">Session</h2>
-          <p className="text-gray-500 text-sm mt-1">
+          <h2 className="text-xl font-bold tracking-tight">Session</h2>
+          <p className="text-muted-text text-sm mt-1">
             Sign out of InterviewPressure on this device.
           </p>
         </div>
         <button
           type="button"
           onClick={() => void signOut()}
-          className="border border-gray-700 hover:bg-gray-900 px-6 py-3 rounded-xl font-semibold transition shrink-0"
+          className="border border-border-d hover:bg-white/5 hover:text-primary-text px-6 py-3 rounded-xl font-semibold transition-all duration-200 text-secondary-text shrink-0"
         >
           Log out
         </button>

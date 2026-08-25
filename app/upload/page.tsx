@@ -32,9 +32,7 @@ export default function UploadPage() {
       .then((data) => {
         if (active) setResumes(data);
       })
-      .catch(() => {
-        // Library is optional; upload still works.
-      });
+      .catch(() => {});
 
     return () => {
       active = false;
@@ -49,9 +47,7 @@ export default function UploadPage() {
 
   if (!ready) {
     return (
-      <main className="px-6 py-24 text-center text-gray-500">
-        Loading...
-      </main>
+      <main className="px-6 py-24 text-center text-muted-text">Loading...</main>
     );
   }
 
@@ -118,28 +114,33 @@ export default function UploadPage() {
     Number(sessionStorage.getItem(RESUME_ID_STORAGE_KEY)) === selectedId;
 
   return (
-    <main className="px-6 py-12 max-w-3xl mx-auto">
-      <p className="text-blue-500 text-sm font-semibold">Step 1 of 2</p>
-      <h1 className="text-3xl md:text-4xl font-bold mt-2">Your resume</h1>
-      <p className="text-gray-400 mt-3">
+    <main className="page-enter px-6 py-12 max-w-3xl mx-auto">
+      <p className="text-accent text-sm font-semibold">Step 1 of 2</p>
+      <h1 className="text-3xl md:text-4xl font-bold mt-2 tracking-tight">
+        Your resume
+      </h1>
+      <p className="text-secondary-text mt-3">
         Upload a new PDF or pick one you have already uploaded. Text is
-        extracted server-side using pdf.js.
+        extracted server-side.
       </p>
 
-      <div className="mt-10 border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-2xl p-10 text-center bg-gray-950 transition">
+      {/* Upload dropzone */}
+      <div className="mt-10 border-2 border-dashed border-border-s hover:border-accent/40 rounded-2xl p-10 text-center bg-surface/40 transition-all duration-300 group">
         <div className="text-4xl mb-4" aria-hidden>
           📄
         </div>
-        <h2 className="text-lg font-semibold">Upload your resume</h2>
-        <p className="text-gray-500 text-sm mt-1">
+        <h2 className="text-lg font-semibold text-primary-text">
+          Upload your resume
+        </h2>
+        <p className="text-muted-text text-sm mt-1">
           PDF only · up to 10 MB
         </p>
 
         <label
-          className={`inline-block mt-6 px-7 py-3 rounded-xl cursor-pointer font-semibold transition ${
+          className={`inline-block mt-6 px-7 py-3 rounded-xl cursor-pointer font-semibold transition-all duration-200 ${
             uploading
-              ? "bg-blue-600/50 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+              ? "bg-accent/40 cursor-not-allowed text-accent/70"
+              : "bg-accent hover:bg-accent-hover shadow-lg shadow-accent/10 hover:shadow-accent/20"
           }`}
         >
           {uploading ? "Reading your resume..." : "Choose PDF"}
@@ -154,34 +155,40 @@ export default function UploadPage() {
         </label>
 
         {uploading && (
-          <p className="mt-4 text-sm text-blue-400" role="status">
+          <p className="mt-4 text-sm text-accent" role="status">
             Uploading and extracting text...
           </p>
         )}
 
         {uploadError && (
-          <p role="alert" className="mt-5 text-sm text-red-400">
+          <div
+            role="alert"
+            className="mt-5 bg-danger/5 border border-danger/20 text-danger text-sm rounded-xl px-4 py-3 inline-block max-w-full"
+          >
             {uploadError}
-          </p>
+          </div>
         )}
       </div>
 
       {lastUpload && (
-        <div className="mt-8 bg-gray-950 border border-green-500/30 rounded-2xl p-6">
-          <p className="text-green-400 font-semibold">
-            ✓ Resume processed
+        <div className="mt-8 bg-surface border border-success/20 rounded-2xl p-6">
+          <p className="text-success font-semibold flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-success/10 text-sm">
+              ✓
+            </span>
+            Resume processed
           </p>
-          <p className="text-gray-300 mt-2">
+          <p className="text-secondary-text mt-3">
             {lastUpload.filename} · {lastUpload.pages} page
             {lastUpload.pages === 1 ? "" : "s"}
           </p>
 
           {lastUpload.preview && (
             <>
-              <p className="text-xs text-gray-500 uppercase tracking-wide mt-4 mb-2">
+              <p className="text-xs text-muted-text uppercase tracking-wide mt-5 mb-2 font-semibold">
                 Extracted text preview
               </p>
-              <pre className="whitespace-pre-wrap break-words text-sm text-gray-300 bg-black border border-gray-800 rounded-xl p-4 max-h-48 overflow-y-auto leading-6">
+              <pre className="whitespace-pre-wrap break-words text-sm text-secondary-text bg-base border border-border-s rounded-xl p-4 max-h-48 overflow-y-auto leading-relaxed">
                 {lastUpload.preview}
                 {lastUpload.preview.length >= 400 ? "\n…" : ""}
               </pre>
@@ -194,7 +201,7 @@ export default function UploadPage() {
         <section aria-labelledby="saved-resumes-heading" className="mt-10">
           <h2
             id="saved-resumes-heading"
-            className="text-xl font-bold mb-4"
+            className="text-xl font-bold mb-4 tracking-tight"
           >
             Saved resumes
           </h2>
@@ -203,10 +210,10 @@ export default function UploadPage() {
             {resumes.map((resume) => (
               <li key={resume.id}>
                 <div
-                  className={`rounded-2xl border p-4 flex items-center gap-4 transition ${
+                  className={`rounded-2xl border p-4 flex items-center gap-4 transition-all duration-200 ${
                     selectedId === resume.id
-                      ? "border-blue-500 bg-blue-500/5"
-                      : "border-gray-800 bg-gray-950 hover:border-gray-600"
+                      ? "border-accent/40 bg-accent/5"
+                      : "border-border-s bg-surface/60 hover:border-border-d"
                   }`}
                 >
                   <button
@@ -215,15 +222,17 @@ export default function UploadPage() {
                     className="flex-1 min-w-0 text-left"
                     aria-pressed={selectedId === resume.id}
                   >
-                    <p className="font-semibold truncate">{resume.filename}</p>
-                    <p className="text-gray-500 text-xs mt-1 truncate">
+                    <p className="font-semibold truncate text-primary-text">
+                      {resume.filename}
+                    </p>
+                    <p className="text-muted-text text-xs mt-1 truncate">
                       {resume.pages} page{resume.pages === 1 ? "" : "s"} ·{" "}
                       {new Date(resume.uploaded_at).toLocaleDateString()}
                     </p>
                   </button>
 
                   {selectedId === resume.id && (
-                    <span className="text-blue-400 text-xs font-semibold shrink-0">
+                    <span className="text-accent text-xs font-semibold shrink-0">
                       Selected ✓
                     </span>
                   )}
@@ -233,7 +242,7 @@ export default function UploadPage() {
                     onClick={() => void handleDeleteResume(resume.id)}
                     disabled={deletingId === resume.id}
                     aria-label={`Delete ${resume.filename}`}
-                    className="border border-gray-800 hover:border-red-500/50 hover:text-red-400 text-gray-500 text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50 transition shrink-0"
+                    className="border border-border-s hover:border-danger/40 hover:text-danger hover:bg-danger/5 text-muted-text text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50 transition-all duration-200 shrink-0"
                   >
                     {deletingId === resume.id ? "..." : "Delete"}
                   </button>
@@ -248,9 +257,12 @@ export default function UploadPage() {
         <div className="mt-10 text-center">
           <Link
             href="/job-details"
-            className="inline-block w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-semibold text-lg transition"
+            className="group inline-block w-full sm:w-auto bg-accent hover:bg-accent-hover px-10 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
-            Continue to Job Details →
+            Continue to Job Details
+            <span className="inline-block ml-1 transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
           </Link>
         </div>
       )}

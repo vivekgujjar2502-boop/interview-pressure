@@ -4,7 +4,7 @@ const HOW_IT_WORKS = [
   {
     step: "1",
     title: "Upload Resume",
-    text: "Your PDF is parsed locally so questions can reference your real experience.",
+    text: "Your PDF is parsed server-side so questions can reference your real experience.",
   },
   {
     step: "2",
@@ -53,81 +53,110 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <main>
-      <section className="text-center px-6 pt-20 pb-24 max-w-5xl mx-auto">
-        <p className="text-blue-500 font-semibold mb-5 tracking-wide uppercase text-sm">
+    <main className="page-enter">
+      {/* Hero */}
+      <section className="relative text-center px-6 pt-24 pb-28 max-w-5xl mx-auto overflow-hidden">
+        {/* Subtle gradient glow behind hero */}
+        <div
+          aria-hidden
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-20 blur-[120px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(96,165,250,0.4) 0%, rgba(167,139,250,0.2) 50%, transparent 80%)",
+          }}
+        />
+
+        <p className="relative text-accent font-semibold mb-6 tracking-wide uppercase text-xs">
           AI-powered interview practice
         </p>
 
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold leading-tight">
+        <h1 className="relative text-4xl sm:text-6xl md:text-7xl font-bold leading-[1.1] tracking-tight">
           Prepare for your
           <br />
-          <span className="text-blue-500">real interview.</span>
+          <span className="gradient-text">real interview.</span>
         </h1>
 
-        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mt-7 leading-relaxed">
+        <p className="relative text-secondary-text text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed">
           Upload your resume, add the job you are targeting, practice
           personalized questions out loud, and receive detailed AI feedback on
           every single answer.
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="relative mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/upload"
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold text-lg transition"
+            className="group w-full sm:w-auto bg-accent hover:bg-accent-hover px-8 py-4 rounded-xl font-semibold text-base transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
           >
-            Start Mock Interview →
+            Start Mock Interview
+            <span className="inline-block ml-1 transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
           </Link>
 
           <Link
             href="#how-it-works"
-            className="w-full sm:w-auto border border-gray-700 hover:bg-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition"
+            className="w-full sm:w-auto border border-border-d hover:bg-white/5 px-8 py-4 rounded-xl font-semibold text-base text-secondary-text hover:text-primary-text transition-all duration-200"
           >
             How it works
           </Link>
         </div>
 
-        <p className="text-gray-600 text-sm mt-6">
+        <p className="relative text-muted-text text-sm mt-8">
           No real interviewer. No pressure. Just practice — fully local and
           private.
         </p>
       </section>
 
-      <section id="how-it-works" className="max-w-6xl mx-auto px-6 pb-24">
-        <h2 className="text-3xl font-bold text-center">How it works</h2>
+      {/* How it works */}
+      <section
+        id="how-it-works"
+        className="max-w-6xl mx-auto px-6 pb-28"
+      >
+        <h2 className="text-3xl font-bold text-center tracking-tight">
+          How it works
+        </h2>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
           {HOW_IT_WORKS.map((item) => (
             <div
               key={item.step}
-              className="border border-gray-800 rounded-2xl p-7 bg-gray-950 hover:border-gray-600 transition"
+              className="group border border-border-s bg-surface/60 rounded-2xl p-7 hover:border-border-d hover:bg-surface transition-all duration-300"
             >
-              <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-600/15 border border-blue-500/30 text-blue-400 font-bold">
+              <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent/10 border border-accent/20 text-accent font-bold text-sm">
                 {item.step}
               </span>
-              <h3 className="text-lg font-semibold mt-4">{item.title}</h3>
-              <p className="text-gray-400 text-sm mt-2 leading-6">{item.text}</p>
+              <h3 className="text-base font-semibold mt-4 text-primary-text">
+                {item.title}
+              </h3>
+              <p className="text-secondary-text text-sm mt-2 leading-relaxed">
+                {item.text}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-28">
-        <h2 className="text-3xl font-bold text-center">
+      {/* Features */}
+      <section className="max-w-6xl mx-auto px-6 pb-32">
+        <h2 className="text-3xl font-bold text-center tracking-tight">
           Everything you need to walk in ready
         </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-14">
           {FEATURES.map((feature) => (
             <div
               key={feature.title}
-              className="border border-gray-800 rounded-2xl p-7 bg-gray-950 hover:border-gray-600 transition"
+              className="group border border-border-s bg-surface/60 rounded-2xl p-7 hover:border-border-d hover:bg-surface transition-all duration-300"
             >
               <div className="text-3xl mb-4" aria-hidden>
                 {feature.icon}
               </div>
-              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-400 text-sm leading-6">{feature.text}</p>
+              <h3 className="text-base font-semibold mb-2 text-primary-text">
+                {feature.title}
+              </h3>
+              <p className="text-secondary-text text-sm leading-relaxed">
+                {feature.text}
+              </p>
             </div>
           ))}
         </div>

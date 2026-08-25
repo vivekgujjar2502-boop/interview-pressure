@@ -35,10 +35,12 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="px-6 py-16">
+    <main className="page-enter px-6 py-20">
       <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center">Forgot password</h1>
-        <p className="text-gray-400 text-center mt-3">
+        <h1 className="text-3xl font-bold text-center tracking-tight">
+          Forgot password
+        </h1>
+        <p className="text-secondary-text text-center mt-3">
           Enter your account email to start a password reset.
         </p>
 
@@ -46,10 +48,13 @@ export default function ForgotPasswordPage() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-8 space-y-6"
+            className="mt-10 bg-surface border border-border-s rounded-2xl p-8 space-y-6 shadow-lg shadow-black/20"
           >
             <div>
-              <label htmlFor="email" className="block font-semibold mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-secondary-text mb-2"
+              >
                 Email
               </label>
               <input
@@ -60,49 +65,52 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-black border border-gray-700 rounded-xl px-4 py-3 placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                className="w-full bg-base border border-border-s rounded-xl px-4 py-3 text-primary-text placeholder-muted-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all duration-200"
               />
             </div>
 
             {error && (
-              <p role="alert" className="text-sm text-red-400">
+              <div
+                role="alert"
+                className="bg-danger/5 border border-danger/20 text-danger text-sm rounded-xl px-4 py-3"
+              >
                 {error}
-              </p>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed px-8 py-4 rounded-xl font-semibold transition"
+              className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3.5 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10 hover:shadow-accent/20"
             >
               {submitting ? "Processing..." : "Request Reset"}
             </button>
 
-            <p className="text-sm text-center text-gray-400">
+            <p className="text-sm text-center text-secondary-text">
               Remembered it?{" "}
               <Link
                 href="/login"
-                className="text-blue-400 hover:text-blue-300 transition"
+                className="text-accent hover:text-accent-hover transition-colors duration-200"
               >
                 Sign in
               </Link>
             </p>
           </form>
         ) : (
-          <div className="mt-10 bg-gray-950 border border-gray-800 rounded-2xl p-8 space-y-5">
-            <p className="text-gray-300">{message}</p>
+          <div className="mt-10 bg-surface border border-border-s rounded-2xl p-8 space-y-5 shadow-lg shadow-black/20">
+            <p className="text-primary-text">{message}</p>
 
             {devToken && (
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 text-sm space-y-3">
-                <p className="text-blue-200">
+              <div className="bg-accent/5 border border-accent/15 rounded-xl p-5 text-sm space-y-3">
+                <p className="text-accent font-medium">
                   Development mode is enabled, so your reset token is:
                 </p>
-                <code className="block break-all text-xs bg-black border border-gray-800 rounded-lg px-3 py-2 text-blue-300">
+                <code className="block break-all text-xs bg-base border border-border-s rounded-lg px-3 py-2 text-accent font-mono">
                   {devToken}
                 </code>
                 <Link
                   href={`/reset-password?token=${encodeURIComponent(devToken)}`}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold transition"
+                  className="inline-block bg-accent hover:bg-accent-hover px-5 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-accent/10"
                 >
                   Continue to Reset →
                 </Link>

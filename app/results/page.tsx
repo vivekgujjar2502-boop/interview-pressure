@@ -21,7 +21,7 @@ export default function ResultsRedirectPage() {
   }, [router]);
 
   return (
-    <main className="px-6 py-24 text-center text-gray-500">
+    <main className="px-6 py-24 text-center text-muted-text">
       Redirecting...
     </main>
   );
