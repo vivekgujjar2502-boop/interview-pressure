@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["pdfjs-dist", "@libsql/client"],
+  serverExternalPackages: ["@libsql/client"],
 };
 
 export default nextConfig;

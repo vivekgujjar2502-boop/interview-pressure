@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { initDb } from "@/lib/db";
 import { findSession, createResume } from "@/lib/crud";
 import { withErrorHandling, apiError } from "@/lib/api-helpers";
+import { getDocumentProxy, extractText } from "unpdf";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -17,33 +18,13 @@ async function getCurrentUser() {
   return session?.user ?? null;
 }
 
-async function extractPdfText(buffer: Buffer): Promise<{ text: string; pages: number }> {
-  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const data = new Uint8Array(buffer);
-
-  const loadingTask = pdfjsLib.getDocument({ data });
-  const doc = await loadingTask.promise;
-
-  const totalPages = doc.numPages;
-  const pageTexts: string[] = [];
-
-  for (let i = 1; i <= totalPages; i++) {
-    const page = await doc.getPage(i);
-    const textContent = await page.getTextContent();
-    const pageText = textContent.items
-      .filter((item) => "str" in item && typeof (item as { str?: unknown }).str === "string")
-      .map((item) => (item as { str: string }).str)
-      .join(" ");
-    if (pageText.trim()) {
-      pageTexts.push(pageText);
-    }
-    page.cleanup();
-  }
-
-  return {
-    text: pageTexts.join("\n\n").trim(),
-    pages: totalPages,
-  };
+async function extractPdfText(
+  data: Uint8Array
+): Promise<{ text: string; pages: number }> {
+  const pdf = await getDocumentProxy(data);
+  const result = await extractText(pdf);
+  const text = result.text.join("\n\n").trim();
+  return { text, pages: result.totalPages };
 }
 
 export async function POST(request: Request) {
@@ -81,8 +62,8 @@ export async function POST(request: Request) {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const result = await extractPdfText(buffer);
+      const data = new Uint8Array(arrayBuffer);
+      const result = await extractPdfText(data);
       extractedText = result.text;
       pageCount = result.pages;
     } catch (err) {
