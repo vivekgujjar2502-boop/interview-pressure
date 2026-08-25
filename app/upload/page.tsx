@@ -123,7 +123,7 @@ export default function UploadPage() {
       <h1 className="text-3xl md:text-4xl font-bold mt-2">Your resume</h1>
       <p className="text-gray-400 mt-3">
         Upload a new PDF or pick one you have already uploaded. Text is
-        extracted locally by the Python backend.
+        extracted server-side using pdf.js.
       </p>
 
       <div className="mt-10 border-2 border-dashed border-gray-700 hover:border-gray-500 rounded-2xl p-10 text-center bg-gray-950 transition">

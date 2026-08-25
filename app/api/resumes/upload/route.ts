@@ -4,6 +4,9 @@ import { initDb } from "@/lib/db";
 import { findSession, createResume } from "@/lib/crud";
 import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
+export const runtime = "nodejs";
+export const maxDuration = 30;
+
 const SESSION_COOKIE = "ip_session";
 
 async function getCurrentUser() {
@@ -12,6 +15,35 @@ async function getCurrentUser() {
   if (!token) return null;
   const session = await findSession(token);
   return session?.user ?? null;
+}
+
+async function extractPdfText(buffer: Buffer): Promise<{ text: string; pages: number }> {
+  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const data = new Uint8Array(buffer);
+
+  const loadingTask = pdfjsLib.getDocument({ data });
+  const doc = await loadingTask.promise;
+
+  const totalPages = doc.numPages;
+  const pageTexts: string[] = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    const page = await doc.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .filter((item) => "str" in item && typeof (item as { str?: unknown }).str === "string")
+      .map((item) => (item as { str: string }).str)
+      .join(" ");
+    if (pageText.trim()) {
+      pageTexts.push(pageText);
+    }
+    page.cleanup();
+  }
+
+  return {
+    text: pageTexts.join("\n\n").trim(),
+    pages: totalPages,
+  };
 }
 
 export async function POST(request: Request) {
@@ -50,15 +82,21 @@ export async function POST(request: Request) {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const { PDFParse } = await import("pdf-parse");
-      const parser = new PDFParse({ data: buffer });
-      const textResult = await parser.getText();
-      extractedText = (textResult.text || "").trim();
-      pageCount = textResult.total || 0;
-      await parser.destroy();
-    } catch {
+      const result = await extractPdfText(buffer);
+      extractedText = result.text;
+      pageCount = result.pages;
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
+      console.error("[resume/upload] PDF parse failed:", detail);
       return apiError(
-        "This PDF could not be processed. It may be corrupted or password protected."
+        `This PDF could not be processed: ${detail.slice(0, 200)}`
+      );
+    }
+
+    if (pageCount > 0 && !extractedText) {
+      return apiError(
+        "The PDF was readable but contains no extractable text. " +
+          "It may be a scanned image or use non-standard fonts."
       );
     }
 
