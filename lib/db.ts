@@ -2,11 +2,33 @@ import { createClient, type Client } from "@libsql/client";
 
 let _client: Client | null = null;
 
+function getDatabaseUrl(): string {
+  const url = process.env.DATABASE_URL;
+  if (url) return url;
+
+  if (process.env.VERCEL) {
+    throw new Error(
+      "DATABASE_URL environment variable is not set. " +
+        "On Vercel, you must configure DATABASE_URL in your project settings. " +
+        "Recommended: create a free Turso database at https://turso.tech and set " +
+        "DATABASE_URL to your libsql:// URL (e.g. libsql://your-db-your-org.turso.io)."
+    );
+  }
+
+  // Local development: use a local SQLite file
+  return "file:./data.db";
+}
+
 export function getDb(): Client {
   if (!_client) {
-    _client = createClient({
-      url: process.env.DATABASE_URL || "file:./data.db",
-    });
+    try {
+      _client = createClient({
+        url: getDatabaseUrl(),
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      throw new Error(`Failed to connect to database: ${message}`);
+    }
   }
   return _client;
 }
@@ -110,12 +132,19 @@ let _initialized = false;
 
 export async function initDb() {
   if (_initialized) return;
-  const db = getDb();
-  const statements = SCHEMA.split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-  for (const stmt of statements) {
-    await db.execute(stmt);
+  try {
+    const db = getDb();
+    const statements = SCHEMA.split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    for (const stmt of statements) {
+      await db.execute(stmt);
+    }
+    _initialized = true;
+  } catch (err) {
+    _initialized = false;
+    _client = null;
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Database initialization failed: ${message}`);
   }
-  _initialized = true;
 }

@@ -4,6 +4,7 @@ import { initDb } from "@/lib/db";
 import { findSession, getInterviewById, deleteInterview } from "@/lib/crud";
 import { rm } from "fs/promises";
 import { join } from "path";
+import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -13,10 +14,6 @@ async function getCurrentUser() {
   if (!token) return null;
   const session = await findSession(token);
   return session?.user ?? null;
-}
-
-function jsonError(detail: string, status = 400) {
-  return NextResponse.json({ detail }, { status });
 }
 
 function toInterviewOut(interview: Awaited<ReturnType<typeof getInterviewById>>) {
@@ -41,37 +38,41 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ interviewId: string }> }
 ) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  const { interviewId } = await params;
-  const interview = await getInterviewById(parseInt(interviewId, 10), user.id);
-  if (!interview) return jsonError("Interview not found.", 404);
+    const { interviewId } = await params;
+    const interview = await getInterviewById(parseInt(interviewId, 10), user.id);
+    if (!interview) return apiError("Interview not found.", 404);
 
-  return NextResponse.json(toInterviewOut(interview));
+    return NextResponse.json(toInterviewOut(interview));
+  });
 }
 
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ interviewId: string }> }
 ) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  const { interviewId } = await params;
-  const id = parseInt(interviewId, 10);
-  const interview = await getInterviewById(id, user.id);
-  if (!interview) return jsonError("Interview not found.", 404);
+    const { interviewId } = await params;
+    const id = parseInt(interviewId, 10);
+    const interview = await getInterviewById(id, user.id);
+    if (!interview) return apiError("Interview not found.", 404);
 
-  try {
-    const audioDir = join(process.cwd(), "tmp", `interview_${id}`);
-    await rm(audioDir, { recursive: true, force: true });
-  } catch {
-    // Ignore cleanup errors
-  }
+    try {
+      const audioDir = join(process.cwd(), "tmp", `interview_${id}`);
+      await rm(audioDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
 
-  await deleteInterview(id);
-  return NextResponse.json({ message: "Interview deleted." });
+    await deleteInterview(id);
+    return NextResponse.json({ message: "Interview deleted." });
+  });
 }

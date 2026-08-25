@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { initDb } from "@/lib/db";
 import { findSession, createJob } from "@/lib/crud";
+import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -13,39 +14,37 @@ async function getCurrentUser() {
   return session?.user ?? null;
 }
 
-function jsonError(detail: string, status = 400) {
-  return NextResponse.json({ detail }, { status });
-}
-
 export async function POST(request: Request) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  let body: Record<string, string>;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body.", 422);
-  }
+    let body: Record<string, string>;
+    try {
+      body = await request.json();
+    } catch {
+      return apiError("Invalid JSON body.", 422);
+    }
 
-  const role = (body.role || "").trim();
-  if (!role) return jsonError("Job role is required.");
+    const role = (body.role || "").trim();
+    if (!role) return apiError("Job role is required.");
 
-  const job = await createJob(
-    user.id,
-    role,
-    (body.company || "").trim(),
-    body.experience || "Fresher",
-    (body.description || "").trim()
-  );
+    const job = await createJob(
+      user.id,
+      role,
+      (body.company || "").trim(),
+      body.experience || "Fresher",
+      (body.description || "").trim()
+    );
 
-  return NextResponse.json({
-    id: job.id,
-    role: job.role,
-    company: job.company,
-    experience: job.experience,
-    description: job.description,
-    created_at: job.created_at,
+    return NextResponse.json({
+      id: job.id,
+      role: job.role,
+      company: job.company,
+      experience: job.experience,
+      description: job.description,
+      created_at: job.created_at,
+    });
   });
 }

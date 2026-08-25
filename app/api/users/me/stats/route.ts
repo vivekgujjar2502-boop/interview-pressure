@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { initDb } from "@/lib/db";
 import { findSession, buildUserStats } from "@/lib/crud";
-import { cookies } from "next/headers";
+import { withErrorHandling } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -14,11 +15,13 @@ async function getCurrentUser() {
 }
 
 export async function GET() {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
-  }
-  const stats = await buildUserStats(user.id);
-  return NextResponse.json(stats);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ detail: "Unauthorized" }, { status: 401 });
+    }
+    const stats = await buildUserStats(user.id);
+    return NextResponse.json(stats);
+  });
 }

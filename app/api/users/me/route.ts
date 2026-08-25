@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { initDb } from "@/lib/db";
 import { findSession, updateUserName } from "@/lib/crud";
+import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -13,34 +14,32 @@ async function getCurrentUser() {
   return session?.user ?? null;
 }
 
-function jsonError(detail: string, status = 400) {
-  return NextResponse.json({ detail }, { status });
-}
-
 export async function PATCH(request: Request) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) {
-    return jsonError("You need to sign in to continue.", 401);
-  }
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) {
+      return apiError("You need to sign in to continue.", 401);
+    }
 
-  let body: Record<string, string>;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body.", 422);
-  }
+    let body: Record<string, string>;
+    try {
+      body = await request.json();
+    } catch {
+      return apiError("Invalid JSON body.", 422);
+    }
 
-  const name = (body.name || "").trim();
-  if (name.length < 2) {
-    return jsonError("Please enter your full name.");
-  }
+    const name = (body.name || "").trim();
+    if (name.length < 2) {
+      return apiError("Please enter your full name.");
+    }
 
-  const updated = await updateUserName(user.id, name);
-  return NextResponse.json({
-    id: updated.id,
-    name: updated.name,
-    email: updated.email,
-    created_at: updated.created_at,
+    const updated = await updateUserName(user.id, name);
+    return NextResponse.json({
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      created_at: updated.created_at,
+    });
   });
 }

@@ -11,6 +11,7 @@ import {
   listInterviews,
 } from "@/lib/crud";
 import * as ai from "@/lib/ai";
+import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -20,10 +21,6 @@ async function getCurrentUser() {
   if (!token) return null;
   const session = await findSession(token);
   return session?.user ?? null;
-}
-
-function jsonError(detail: string, status = 400) {
-  return NextResponse.json({ detail }, { status });
 }
 
 function toInterviewOut(interview: Awaited<ReturnType<typeof createInterview>>) {
@@ -44,61 +41,65 @@ function toInterviewOut(interview: Awaited<ReturnType<typeof createInterview>>) 
 }
 
 export async function POST(request: Request) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  let body: { resume_id?: number; job_id?: number };
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body.", 422);
-  }
+    let body: { resume_id?: number; job_id?: number };
+    try {
+      body = await request.json();
+    } catch {
+      return apiError("Invalid JSON body.", 422);
+    }
 
-  const resume = await getResumeScoped(body.resume_id || 0, user.id);
-  if (!resume) return jsonError("Resume not found.", 404);
+    const resume = await getResumeScoped(body.resume_id || 0, user.id);
+    if (!resume) return apiError("Resume not found.", 404);
 
-  const job = await getJobScoped(body.job_id || 0, user.id);
-  if (!job) return jsonError("Job not found.", 404);
+    const job = await getJobScoped(body.job_id || 0, user.id);
+    if (!job) return apiError("Job not found.", 404);
 
-  const skills = extractSkills(resume.extracted_text || "");
-  const fallback = buildQuestions(job.role, job.company, job.experience, skills);
+    const skills = extractSkills(resume.extracted_text || "");
+    const fallback = buildQuestions(job.role, job.company, job.experience, skills);
 
-  let questions: string[];
-  try {
-    questions = await ai.generateQuestions(
-      resume.extracted_text || "",
-      job.role,
-      job.company,
-      job.experience,
-      job.description || ""
-    );
-  } catch {
-    questions = fallback;
-  }
+    let questions: string[];
+    try {
+      questions = await ai.generateQuestions(
+        resume.extracted_text || "",
+        job.role,
+        job.company,
+        job.experience,
+        job.description || ""
+      );
+    } catch {
+      questions = fallback;
+    }
 
-  const interview = await createInterview(user.id, resume.id, job.id, questions);
-  return NextResponse.json(toInterviewOut(interview));
+    const interview = await createInterview(user.id, resume.id, job.id, questions);
+    return NextResponse.json(toInterviewOut(interview));
+  });
 }
 
 export async function GET() {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  const interviews = await listInterviews(user.id);
-  return NextResponse.json(
-    interviews.map((iv) => ({
-      id: iv.id,
-      role: iv.job.role,
-      company: iv.job.company,
-      experience: iv.job.experience,
-      status: iv.status,
-      score: iv.score,
-      created_at: iv.created_at,
-      completed_at: iv.completed_at,
-      total_questions: iv.total_questions,
-      answered_questions: iv.answered_questions,
-    }))
-  );
+    const interviews = await listInterviews(user.id);
+    return NextResponse.json(
+      interviews.map((iv) => ({
+        id: iv.id,
+        role: iv.job.role,
+        company: iv.job.company,
+        experience: iv.job.experience,
+        status: iv.status,
+        score: iv.score,
+        created_at: iv.created_at,
+        completed_at: iv.completed_at,
+        total_questions: iv.total_questions,
+        answered_questions: iv.answered_questions,
+      }))
+    );
+  });
 }

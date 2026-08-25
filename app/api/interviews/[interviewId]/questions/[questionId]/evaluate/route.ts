@@ -11,6 +11,7 @@ import {
   jobDescriptionText,
 } from "@/lib/crud";
 import * as ai from "@/lib/ai";
+import { withErrorHandling, apiError } from "@/lib/api-helpers";
 
 const SESSION_COOKIE = "ip_session";
 
@@ -20,10 +21,6 @@ async function getCurrentUser() {
   if (!token) return null;
   const session = await findSession(token);
   return session?.user ?? null;
-}
-
-function jsonError(detail: string, status = 400) {
-  return NextResponse.json({ detail }, { status });
 }
 
 function answerToJSON(answer: Awaited<ReturnType<typeof upsertAnswer>>) {
@@ -47,59 +44,61 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ interviewId: string; questionId: string }> }
 ) {
-  await initDb();
-  const user = await getCurrentUser();
-  if (!user) return jsonError("Unauthorized", 401);
+  return withErrorHandling(async () => {
+    await initDb();
+    const user = await getCurrentUser();
+    if (!user) return apiError("Unauthorized", 401);
 
-  const { interviewId, questionId } = await params;
-  const ivId = parseInt(interviewId, 10);
-  const qId = parseInt(questionId, 10);
+    const { interviewId, questionId } = await params;
+    const ivId = parseInt(interviewId, 10);
+    const qId = parseInt(questionId, 10);
 
-  const interview = await getInterviewById(ivId, user.id);
-  if (!interview) return jsonError("Interview not found.", 404);
+    const interview = await getInterviewById(ivId, user.id);
+    if (!interview) return apiError("Interview not found.", 404);
 
-  const question = interview.questions.find((q) => q.id === qId);
-  if (!question) {
-    return jsonError("Question does not belong to this interview.", 404);
-  }
+    const question = interview.questions.find((q) => q.id === qId);
+    if (!question) {
+      return apiError("Question does not belong to this interview.", 404);
+    }
 
-  let body: { answer_text?: string };
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body.", 422);
-  }
+    let body: { answer_text?: string };
+    try {
+      body = await request.json();
+    } catch {
+      return apiError("Invalid JSON body.", 422);
+    }
 
-  const answerText = (body.answer_text || "").trim();
-  if (!answerText) {
-    return jsonError("Answer is empty.");
-  }
+    const answerText = (body.answer_text || "").trim();
+    if (!answerText) {
+      return apiError("Answer is empty.");
+    }
 
-  const existing = question.answer;
+    const existing = question.answer;
 
-  await upsertAnswer(
-    qId,
-    answerText,
-    existing?.transcript ?? null,
-    existing?.audio_path ?? null
-  );
-
-  try {
-    const resume = await getResumeById(interview.resume_id);
-    const evaluation = await ai.evaluateAnswer(
-      question.question_text,
+    await upsertAnswer(
+      qId,
       answerText,
-      resume?.extracted_text || "",
-      jobDescriptionText(interview.job)
+      existing?.transcript ?? null,
+      existing?.audio_path ?? null
     );
-    const updated = await applyEvaluation(qId, evaluation);
-    return NextResponse.json(answerToJSON(updated));
-  } catch (err) {
-    const message =
-      err instanceof ai.OllamaSetupError || err instanceof ai.AiResponseError
-        ? err.message
-        : "AI evaluation failed.";
-    const updated = await applyAiError(qId, message);
-    return NextResponse.json(answerToJSON(updated));
-  }
+
+    try {
+      const resume = await getResumeById(interview.resume_id);
+      const evaluation = await ai.evaluateAnswer(
+        question.question_text,
+        answerText,
+        resume?.extracted_text || "",
+        jobDescriptionText(interview.job)
+      );
+      const updated = await applyEvaluation(qId, evaluation);
+      return NextResponse.json(answerToJSON(updated));
+    } catch (err) {
+      const message =
+        err instanceof ai.OllamaSetupError || err instanceof ai.AiResponseError
+          ? err.message
+          : "AI evaluation failed.";
+      const updated = await applyAiError(qId, message);
+      return NextResponse.json(answerToJSON(updated));
+    }
+  });
 }
