@@ -10,8 +10,8 @@ function getDatabaseUrl(): string {
     throw new Error(
       "DATABASE_URL environment variable is not set. " +
         "On Vercel, you must configure DATABASE_URL in your project settings. " +
-        "Recommended: create a free Turso database at https://turso.tech and set " +
-        "DATABASE_URL to your libsql:// URL (e.g. libsql://your-db-your-org.turso.io)."
+        "Create a free Turso database at https://turso.tech and set " +
+        "DATABASE_URL to your libsql:// URL."
     );
   }
 
@@ -22,8 +22,19 @@ function getDatabaseUrl(): string {
 export function getDb(): Client {
   if (!_client) {
     try {
+      const url = getDatabaseUrl();
+      const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
+
+      if (process.env.VERCEL && !authToken) {
+        console.warn(
+          "[DB] TURSO_AUTH_TOKEN is not set. Database operations may fail with 401 errors. " +
+            "Add TURSO_AUTH_TOKEN to your Vercel environment variables."
+        );
+      }
+
       _client = createClient({
-        url: getDatabaseUrl(),
+        url,
+        authToken,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
